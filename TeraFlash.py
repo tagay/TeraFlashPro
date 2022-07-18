@@ -43,7 +43,7 @@ def window_signal(time_trace, peak_pos, width):
     
     return windowed_sig
 
-def window_signal(windowed_sig, N):
+def zero_pad_signal(windowed_sig, N):
     tails=N-len(windowed_sig)
     padded_sig=np.zeros(N)
     for i in range(len(padded_sig)):
@@ -85,23 +85,31 @@ def get_freq_domain_BLC(N_FFT):
     return freq
 
 
-def get_signal_and_fft(filename, width, pad_size, N_FFT):
+def get_signal_and_fft(filename, peak_pos_x, peak_pos_y, width, pad_size, N_FFT):
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
-    peak_pos=int(len(sig_x)/2)
+    windowed_sig_x=window_signal(sig_x, peak_pos_x, pad_size)
+    windowed_sig_y=window_signal(sig_y, peak_pos_y, pad_size)
+    
+    padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
+    padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
 
-
-    cut_sig_x=cut_signal(sig_x, peak_pos, width)
-    cut_sig_y=cut_signal(sig_y, peak_pos, width)
-
-    windowed_sig_x=window_signal(cut_sig_x, pad_size)
-    windowed_sig_y=window_signal(cut_sig_y, pad_size)
-
-    fft_x=do_FFT_full(windowed_sig_x, N_FFT)
-    fft_y=do_FFT_full(windowed_sig_y, N_FFT)
-
-    return sig_x, sig_y, fft_x, fft_y
+    fft_x=do_FFT_full(padded_sig_x, N_FFT)
+    fft_y=do_FFT_full(padded_sig_y, N_FFT)
+    
+    time_trace_x=[]
+    time_trace_y=[]
+    
+    time_trace_x.append(sig_x)
+    time_trace_x.append(windowed_sig_x)
+    time_trace_x.append(padded_sig_x)
+    
+    time_trace_y.append(sig_y)
+    time_trace_y.append(windowed_sig_y)
+    time_trace_y.append(padded_sig_y)    
+    
+    return time_trace_x, time_trace_y, fft_x, fft_y
 
 def get_signal_and_fft_BLC(filename, width, pad_size, N_FFT):
     sig_x=read_data_BLC(filename,4)
