@@ -33,25 +33,23 @@ def read_data_BLC(filename, n):
     return column_n
 
 
-def cut_signal(time_trace, peak_pos, width):
-# cut is centered around peak position of original signal
+def window_signal(time_trace, peak_pos, width):
     #max_pos=np.argmax(time_trace)
     data=np.zeros(width)
     for i in range(width):
         data[i]=time_trace[peak_pos-int(width/2)+i]
+    window=np.hanning(width)
+    windowed_sig=np.multiply(data, window)
+    
+    return windowed_sig
 
-    return data
+def window_signal(windowed_sig, N):
+    tails=N-len(windowed_sig)
+    padded_sig=np.zeros(N)
+    for i in range(len(padded_sig)):
+        padded_sig[int(tails/2)+i]=windowed_sig[i]
 
-def window_signal(time_trace, N):
-    tails=N-len(time_trace)
-    window=np.hanning(len(time_trace))
-    temp=np.multiply(time_trace,window)
-
-    temp_2=np.zeros(len(time_trace)+tails)
-    for i in range(len(temp)):
-        temp_2[int(tails/2)+i]=temp[i]
-
-    return temp_2
+    return padded_sig
 
 
 
