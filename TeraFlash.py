@@ -65,6 +65,14 @@ def zero_pad_signal(windowed_sig, N):
     return padded_sig
 
 
+def zero_pad_signal_wide(windowed_sig, N_pad, offset):
+    tails=N_pad-len(windowed_sig)
+    padded_sig=np.zeros(N_pad)
+    for i in range(len(padded_sig)):
+        padded_sig[int(tails/2)+offset+i]=windowed_sig[i]
+
+    return padded_sig
+
 
 def do_FFT (time_trace, N_FFT):
     FFT=fft(time_trace, N_FFT*2)[0:N_FFT]
@@ -108,8 +116,8 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
     padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
     padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
 
-    fft_x=do_FFT_full(padded_sig_x, N_FFT)
-    fft_y=do_FFT_full(padded_sig_y, N_FFT)
+    fft_x=do_FFT(padded_sig_x, N_FFT)
+    fft_y=do_FFT(padded_sig_y, N_FFT)
     
     time_trace_x=[]
     time_trace_y=[]
@@ -125,18 +133,18 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
     return time_trace_x, time_trace_y, fft_x, fft_y
 
 
-def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, N_FFT):
+def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, N_FFT):
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
     windowed_sig_x=window_signal_wide(sig_x, peak_pos, pad_size)
     windowed_sig_y=window_signal_wide(sig_y, peak_pos, pad_size)
     
-    padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
-    padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
+    padded_sig_x=zero_pad_signal_wide(windowed_sig_x, pad_size, offset)
+    padded_sig_y=zero_pad_signal_wide(windowed_sig_y, pad_size, offset)    
 
-    fft_x=do_FFT_full(padded_sig_x, N_FFT)
-    fft_y=do_FFT_full(padded_sig_y, N_FFT)
+    fft_x=do_FFT(padded_sig_x, N_FFT)
+    fft_y=do_FFT(padded_sig_y, N_FFT)
     
     time_trace_x=[]
     time_trace_y=[]
