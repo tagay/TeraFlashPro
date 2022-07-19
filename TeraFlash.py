@@ -110,8 +110,8 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
-    windowed_sig_x=window_signal(sig_x, peak_pos, pad_size)
-    windowed_sig_y=window_signal(sig_y, peak_pos, pad_size)
+    windowed_sig_x=window_signal(sig_x, peak_pos, width)
+    windowed_sig_y=window_signal(sig_y, peak_pos, width)
     
     padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
     padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
@@ -142,8 +142,8 @@ def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, N_FFT):
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
-    windowed_sig_x=window_signal_wide(sig_x, peak_pos, pad_size)
-    windowed_sig_y=window_signal_wide(sig_y, peak_pos, pad_size)
+    windowed_sig_x=window_signal_wide(sig_x, peak_pos, width)
+    windowed_sig_y=window_signal_wide(sig_y, peak_pos, width)
     
     padded_sig_x=zero_pad_signal_wide(windowed_sig_x, pad_size, offset)
     padded_sig_y=zero_pad_signal_wide(windowed_sig_y, pad_size, offset)    
