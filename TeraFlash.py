@@ -265,7 +265,7 @@ def get_refractive_index(filename, width, pad_size, N_FFT,L):
     
     return sig1_padded,sig2_padded,phase    
     
-  def donothing():
+def donothing():
     print("Nothing")
     print("Somehting")
     print("Anything")
