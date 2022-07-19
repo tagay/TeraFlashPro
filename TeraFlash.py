@@ -39,7 +39,6 @@ def window_signal(time_trace, peak_pos, width):
     for i in range(width):
         data[i]=time_trace[peak_pos-int(width/2)+i]
     window=np.hanning(width)
-    window=np.power(window, 0.125)
     windowed_sig=np.multiply(data, window)
     
     return windowed_sig
@@ -52,6 +51,7 @@ def window_signal_wide(time_trace, peak_pos, width):
     for i in range(width):
         data[i]=time_trace[peak_pos-int(width/2)+i]
     window=np.hanning(width)
+    window=np.power(window, 0.125)
     windowed_sig=np.multiply(data, window)
     
     return windowed_sig
