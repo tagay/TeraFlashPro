@@ -56,10 +56,10 @@ def window_signal_wide(time_trace, peak_pos, width):
     
     return windowed_sig
 
-def zero_pad_signal(windowed_sig, N):
-    tails=N-len(windowed_sig)
-    padded_sig=np.zeros(N)
-    for i in range(len(padded_sig)):
+def zero_pad_signal(windowed_sig, N_pad):
+    tails=N_pad-len(windowed_sig)
+    padded_sig=np.zeros(N_pad)
+    for i in range(len(windowed_sig)):
         padded_sig[int(tails/2)+i]=windowed_sig[i]
 
     return padded_sig
@@ -68,7 +68,7 @@ def zero_pad_signal(windowed_sig, N):
 def zero_pad_signal_wide(windowed_sig, N_pad, offset):
     tails=N_pad-len(windowed_sig)
     padded_sig=np.zeros(N_pad)
-    for i in range(len(padded_sig)):
+    for i in range(len(windowed_sig)):
         padded_sig[int(tails/2)+offset+i]=windowed_sig[i]
 
     return padded_sig
