@@ -267,5 +267,6 @@ def get_refractive_index(filename, width, pad_size, N_FFT,L):
     
   def donothing():
     print("Nothing")
+    print("Somehting")
     
     
