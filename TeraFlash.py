@@ -39,6 +39,19 @@ def window_signal(time_trace, peak_pos, width):
     for i in range(width):
         data[i]=time_trace[peak_pos-int(width/2)+i]
     window=np.hanning(width)
+    window=np.power(window, 0.125)
+    windowed_sig=np.multiply(data, window)
+    
+    return windowed_sig
+
+
+
+def window_signal_wide(time_trace, peak_pos, width):
+    #max_pos=np.argmax(time_trace)
+    data=np.zeros(width)
+    for i in range(width):
+        data[i]=time_trace[peak_pos-int(width/2)+i]
+    window=np.hanning(width)
     windowed_sig=np.multiply(data, window)
     
     return windowed_sig
@@ -110,6 +123,36 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
     time_trace_y.append(padded_sig_y)    
     
     return time_trace_x, time_trace_y, fft_x, fft_y
+
+
+def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, N_FFT):
+    sig_x=read_data(filename,1)
+    sig_y=-read_data(filename,3)
+
+    windowed_sig_x=window_signal_wide(sig_x, peak_pos, pad_size)
+    windowed_sig_y=window_signal_wide(sig_y, peak_pos, pad_size)
+    
+    padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
+    padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
+
+    fft_x=do_FFT_full(padded_sig_x, N_FFT)
+    fft_y=do_FFT_full(padded_sig_y, N_FFT)
+    
+    time_trace_x=[]
+    time_trace_y=[]
+    
+    time_trace_x.append(sig_x)
+    time_trace_x.append(windowed_sig_x)
+    time_trace_x.append(padded_sig_x)
+    
+    time_trace_y.append(sig_y)
+    time_trace_y.append(windowed_sig_y)
+    time_trace_y.append(padded_sig_y)    
+    
+    return time_trace_x, time_trace_y, fft_x, fft_y
+
+
+
 
 def get_signal_and_fft_BLC(filename, width, pad_size, N_FFT):
     sig_x=read_data_BLC(filename,4)
@@ -265,11 +308,6 @@ def get_refractive_index(filename, width, pad_size, N_FFT,L):
     
     return sig1_padded,sig2_padded,phase    
     
-def donothing():
-    print("Nothing")
-    print("Somehting")
-    print("Anything")
-    print("ANyyyy")
-    print("ANNNNNNNNNN")
+
     
     
