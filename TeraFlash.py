@@ -134,11 +134,6 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
 
 
 def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, n, N_FFT):
-    print("Peak pos is: "+str(peak_pos))
-    print("Width is: "+str(width))
-    print("Pad size is: "+str(pad_size))
-    print("offset is: "+str(offset))
-    
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
