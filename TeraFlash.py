@@ -45,13 +45,13 @@ def window_signal(time_trace, peak_pos, width):
 
 
 
-def window_signal_wide(time_trace, peak_pos, width):
+def window_signal_wide(time_trace, peak_pos, width, n):
     #max_pos=np.argmax(time_trace)
     data=np.zeros(width)
     for i in range(width):
         data[i]=time_trace[peak_pos-int(width/2)+i]
     window=np.hanning(width)
-    window=np.power(window, 0.125)
+    window=np.power(window, n)
     windowed_sig=np.multiply(data, window)
     
     return windowed_sig
@@ -133,7 +133,7 @@ def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
     return time_trace_x, time_trace_y, fft_x, fft_y
 
 
-def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, N_FFT):
+def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, n, N_FFT):
     print("Peak pos is: "+str(peak_pos))
     print("Width is: "+str(width))
     print("Pad size is: "+str(pad_size))
@@ -142,8 +142,8 @@ def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, N_FFT):
     sig_x=read_data(filename,1)
     sig_y=-read_data(filename,3)
 
-    windowed_sig_x=window_signal_wide(sig_x, peak_pos, width)
-    windowed_sig_y=window_signal_wide(sig_y, peak_pos, width)
+    windowed_sig_x=window_signal_wide(sig_x, peak_pos, width, n)
+    windowed_sig_y=window_signal_wide(sig_y, peak_pos, width, n)
     
     padded_sig_x=zero_pad_signal_wide(windowed_sig_x, pad_size, offset)
     padded_sig_y=zero_pad_signal_wide(windowed_sig_y, pad_size, offset)    
