@@ -41,7 +41,7 @@ def window_signal(time_trace, hw, n):
             window.append(math.cos((i-zero)/hw)**n)
         else:
             window.append(0)
-    windwed_sig=np.multiply(time_trace, window)
+    windowed_sig=np.multiply(time_trace, window)
     
     return window, windowed_sig
 
