@@ -33,15 +33,17 @@ def read_data_BLC(filename, n):
     return column_n
 
 
-def window_signal(time_trace, peak_pos, width):
-    #max_pos=np.argmax(time_trace)
-    data=np.zeros(width)
-    for i in range(width):
-        data[i]=time_trace[peak_pos-int(width/2)+i]
-    window=np.hanning(width)
-    windowed_sig=np.multiply(data, window)
+def window_signal(time_trace, hw, n):
+    zero=find_zero(time_trace)
+    window=[]
+    for i in range(len(time_trace)):
+        if abs(i-zero)<=hw:
+            window.append(math.cos((i-zero)/hw)**n)
+        else:
+            window.append(0)
+    windwed_sig=np.multiply(time_trace, window)
     
-    return windowed_sig
+    return window, windowed_sig
 
 
 
@@ -207,11 +209,18 @@ def get_phase(fft):
             a[i+1:]-=2*math.pi
         elif(a[i+1]-a[i]<-1):
             a[i+1:]+=2*math.pi
-
-        
-    
+            
     return a
 
+def get_window(sig, n):
+    N=len(sig)
+    peak=find_zero(sig)
+    temp=np.arange(0,N,1)
+    vals=(math.pi/2)*(temp-(N-1)/2)/((N-1)/2)
+    window=np.cos(vals)
+    window=np.power(window, n)
+    return window
+    
 
 def get_mean(array):
     f_len=len(array[0])
