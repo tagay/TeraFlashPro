@@ -33,7 +33,7 @@ def read_data_BLC(filename, n):
     return column_n
 
 
-def window_signal(time_trace, hw, n):
+def window_signal_sym(time_trace, hw, n):
     zero=find_zero(time_trace)
     window=[]
     for i in range(len(time_trace)):
@@ -47,7 +47,7 @@ def window_signal(time_trace, hw, n):
 
 
 
-def window_signal_wide(time_trace, peak_pos, width, n):
+def window_signal_asym(time_trace, peak_pos, width, n):
     #max_pos=np.argmax(time_trace)
     data=np.zeros(width)
     for i in range(width):
