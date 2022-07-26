@@ -11,14 +11,11 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 def read_data(filename, n, offset=0):
-# n is corresponding column number in .csv file
     data=np.genfromtxt(filename, delimiter=",", skip_header=1, max_rows=10000)
     column_n=[]
-    for i in range(int(offset)):
-        column_n.append(0)
     for i in data:
         column_n.append(i[n])
-    column_n=np.array(column_n)
+    column_n=np.pad(column_n, (offset,0), mode="constant")
     return column_n
 
 def do_FFT (time_trace, N_FFT):
@@ -45,39 +42,22 @@ def window_signal_sym(time_trace, hw, n):
     
     return windowed_sig
 
-def pad_signal_sym(windowed_sig, N_pad):
-    tails=N_pad-len(windowed_sig)
-    padded_sig=np.zeros(N_pad)
-    for i in range(len(windowed_sig)):
-        padded_sig[int(tails/2)+i]=windowed_sig[i]
-
-    return padded_sig
 
 
 
-
-
-def window_signal_asym(time_trace, peak_pos, width, n):
-    #max_pos=np.argmax(time_trace)
-    data=np.zeros(width)
-    for i in range(width):
-        data[i]=time_trace[peak_pos-int(width/2)+i]
-    window=np.hanning(width)
-    window=np.power(window, n)
-    windowed_sig=np.multiply(data, window)
+def window_signal_asym(time_trace, wl, wr, n):
+    zero=find_zero(time_trace)
+    center=zero+abs(wl-wr)/2
+    hw=(wr+wl)/2
+    window=[]
+    for i in range(len(time_trace)):
+        if abs(i-center)<=hw:
+            window.append(math.cos((i-zero)/hw)**n)
+        else:
+            window.append(0)
+    windowed_sig=np.multiply(time_trace, window)
     
     return windowed_sig
-
-
-
-
-def zero_pad_signal_wide(windowed_sig, N_pad, offset):
-    tails=N_pad-len(windowed_sig)
-    padded_sig=np.zeros(N_pad)
-    for i in range(len(windowed_sig)):
-        padded_sig[int(tails/2)+offset+i]=windowed_sig[i]
-
-    return padded_sig
 
 
 
@@ -89,16 +69,14 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True):
     if sym==True:
         windowed_sig_x=window_signal_sym(sig_x, hw, n)
         windowed_sig_y=window_signal_sym(sig_y, hw, n)
+    elif sym==False:
+        windowed_sig_x=window_signal_asym(sig_x, hw, n)
+        windowed_sig_y=window_signal_asym(sig_y, hw, n)
     
-        padded_sig_x=pad_signal_sym(windowed_sig_x, pad_size)
-        padded_sig_y=pad_signal_sym(windowed_sig_y, pad_size)    
+    padded_sig_x=np.pad(windowed_sig_x, pad_size, mode="constant")
+    padded_sig_y=np.pad(windowed_sig_y, pad_size, mode="constant") 
 
-    if sym==False:
-        windowed_sig_x=window_signal_sym(sig_x, hw, n)
-        windowed_sig_y=window_signal_sym(sig_y, hw, n)
-    
-        padded_sig_x=pad_signal_sym(windowed_sig_x, pad_size)
-        padded_sig_y=pad_signal_sym(windowed_sig_y, pad_size)
+
         
     fft_x=do_FFT(padded_sig_x, N_FFT)
     fft_y=do_FFT(padded_sig_y, N_FFT)
@@ -115,6 +93,52 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True):
     time_trace_y.append(padded_sig_y)    
     
     return time_trace_x, time_trace_y, fft_x, fft_y
+
+
+def find_zero(signal):
+    max_pos=np.argmax(signal)
+    min_pos=np.argmin(signal)
+
+    if min_pos>max_pos:
+        for i in range(max_pos,min_pos):
+            if signal[i+1]<0 and signal[i]>0:
+                frac=signal[i]/(signal[i]-signal[i+1])
+                index=i
+
+    if min_pos<max_pos:
+        for i in range(min_pos,max_pos):
+            if signal[i+1]>0 and signal[i]<0:
+                frac=signal[i]/(signal[i]-signal[i+1])
+                index=i
+    pos=index+frac
+    return pos
+
+def get_phase(fft):
+    a=np.angle(fft)
+    for i in range(0, len(a)-1):
+        if(a[i+1]-a[i]>1):
+            #print("aaa")
+            a[i+1:]-=2*math.pi
+        elif(a[i+1]-a[i]<-1):
+            a[i+1:]+=2*math.pi
+            
+    return a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def get_signal_and_fft_wide(filename, peak_pos, width, pad_size, offset, n, N_FFT):
@@ -165,34 +189,7 @@ def get_signal_and_fft_BLC(filename, width, pad_size, N_FFT):
 
 
 
-def find_zero(signal):
-    max_pos=np.argmax(signal)
-    min_pos=np.argmin(signal)
 
-    if min_pos>max_pos:
-        for i in range(max_pos,min_pos):
-            if signal[i+1]<0 and signal[i]>0:
-                frac=signal[i]/(signal[i]-signal[i+1])
-                index=i
-
-    if min_pos<max_pos:
-        for i in range(min_pos,max_pos):
-            if signal[i+1]>0 and signal[i]<0:
-                frac=signal[i]/(signal[i]-signal[i+1])
-                index=i
-    pos=index+frac
-    return pos
-
-def get_phase(fft):
-    a=np.angle(fft)
-    for i in range(0, len(a)-1):
-        if(a[i+1]-a[i]>1):
-            #print("aaa")
-            a[i+1:]-=2*math.pi
-        elif(a[i+1]-a[i]<-1):
-            a[i+1:]+=2*math.pi
-            
-    return a
 
 def get_window(sig, n):
     N=len(sig)
