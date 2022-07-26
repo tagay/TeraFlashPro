@@ -43,7 +43,7 @@ def window_signal_sym(time_trace, hw, n):
             window.append(0)
     windowed_sig=np.multiply(time_trace, window)
     
-    return window, windowed_sig
+    return windowed_sig
 
 def pad_signal_sym(windowed_sig, N_pad):
     tails=N_pad-len(windowed_sig)
