@@ -9,28 +9,28 @@ from matplotlib import cm
 from matplotlib import colorbar
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-#### GAGAGAGAGGAG
 
-
-def read_data(filename,n):
+def read_data(filename, n, offset=0):
 # n is corresponding column number in .csv file
     data=np.genfromtxt(filename, delimiter=",", skip_header=1, max_rows=10000)
     column_n=[]
+    for i in range(int(offset)):
+        column_n.append(0)
     for i in data:
         column_n.append(i[n])
     column_n=np.array(column_n)
     return column_n
 
+def do_FFT (time_trace, N_FFT):
+    FFT=fft(time_trace, N_FFT*2)[0:N_FFT]
+    FFT=np.add(np.real(FFT),-1j*np.imag(FFT))
+    return FFT
 
-def read_data_BLC(filename, n):
-    data=np.genfromtxt(filename, skip_header=3, encoding="ISO-8859-1")
-    column_n=[]
-    for i in data:
-        column_n.append(i[n])
-    del column_n[0]
-    offset=np.average(column_n[0:30])
-    column_n=column_n-offset
-    return column_n
+
+def get_freq_domain(N_FFT):
+    freq=fftfreq(N_FFT*2,0.05)[0:N_FFT]
+    return freq
+
 
 
 def window_signal_sym(time_trace, hw, n):
@@ -45,6 +45,16 @@ def window_signal_sym(time_trace, hw, n):
     
     return window, windowed_sig
 
+def pad_signal_sym(windowed_sig, N_pad):
+    tails=N_pad-len(windowed_sig)
+    padded_sig=np.zeros(N_pad)
+    for i in range(len(windowed_sig)):
+        padded_sig[int(tails/2)+i]=windowed_sig[i]
+
+    return padded_sig
+
+
+
 
 
 def window_signal_asym(time_trace, peak_pos, width, n):
@@ -58,13 +68,7 @@ def window_signal_asym(time_trace, peak_pos, width, n):
     
     return windowed_sig
 
-def zero_pad_signal(windowed_sig, N_pad):
-    tails=N_pad-len(windowed_sig)
-    padded_sig=np.zeros(N_pad)
-    for i in range(len(windowed_sig)):
-        padded_sig[int(tails/2)+i]=windowed_sig[i]
 
-    return padded_sig
 
 
 def zero_pad_signal_wide(windowed_sig, N_pad, offset):
@@ -76,48 +80,26 @@ def zero_pad_signal_wide(windowed_sig, N_pad, offset):
     return padded_sig
 
 
-def do_FFT (time_trace, N_FFT):
-    FFT=fft(time_trace, N_FFT*2)[0:N_FFT]
-    FFT=np.add(np.real(FFT),-1j*np.imag(FFT))
-    return FFT
-
-def do_FFT_full (time_trace, N_FFT):
-    FFT=fft(time_trace, N_FFT*2)
-    FFT=np.add(np.real(FFT),-1j*np.imag(FFT))
-    temp=[]
-    for i in range(2*N_FFT):
-        temp.append(FFT[i-N_FFT])
-    return temp
 
 
+def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True):
+    sig_x=read_data(filename, 1, offset)
+    sig_y=-read_data(filename, 3, offset)
 
-def get_freq_domain_full(N_FFT):
-    freq=fftfreq(N_FFT*2,0.05)
-    temp=[]
-    for i in range(2*N_FFT):
-        temp.append(freq[i-N_FFT])
-    return temp
-
-
-def get_freq_domain(N_FFT):
-    freq=fftfreq(N_FFT*2,0.05)[0:N_FFT]
-    return freq
-
-def get_freq_domain_BLC(N_FFT):
-    freq=fftfreq(N_FFT*2,0.06671)[0:N_FFT]
-    return freq
-
-
-def get_signal_and_fft(filename, peak_pos, width, pad_size, N_FFT):
-    sig_x=read_data(filename,1)
-    sig_y=-read_data(filename,3)
-
-    windowed_sig_x=window_signal(sig_x, peak_pos, width)
-    windowed_sig_y=window_signal(sig_y, peak_pos, width)
+    if sym==True:
+        windowed_sig_x=window_signal_sym(sig_x, hw, n)
+        windowed_sig_y=window_signal_sym(sig_y, hw, n)
     
-    padded_sig_x=zero_pad_signal(windowed_sig_x, pad_size)
-    padded_sig_y=zero_pad_signal(windowed_sig_y, pad_size)    
+        padded_sig_x=pad_signal_sym(windowed_sig_x, pad_size)
+        padded_sig_y=pad_signal_sym(windowed_sig_y, pad_size)    
 
+    if sym==False:
+        windowed_sig_x=window_signal_sym(sig_x, hw, n)
+        windowed_sig_y=window_signal_sym(sig_y, hw, n)
+    
+        padded_sig_x=pad_signal_sym(windowed_sig_x, pad_size)
+        padded_sig_y=pad_signal_sym(windowed_sig_y, pad_size)
+        
     fft_x=do_FFT(padded_sig_x, N_FFT)
     fft_y=do_FFT(padded_sig_y, N_FFT)
     
@@ -327,4 +309,39 @@ def get_refractive_index(filename, width, pad_size, N_FFT,L):
     
 
     
-    
+
+def read_data_BLC(filename, n):
+    data=np.genfromtxt(filename, skip_header=3, encoding="ISO-8859-1")
+    column_n=[]
+    for i in data:
+        column_n.append(i[n])
+    del column_n[0]
+    offset=np.average(column_n[0:30])
+    column_n=column_n-offset
+    return column_n
+
+def do_FFT_full (time_trace, N_FFT):
+    FFT=fft(time_trace, N_FFT*2)
+    FFT=np.add(np.real(FFT),-1j*np.imag(FFT))
+    temp=[]
+    for i in range(2*N_FFT):
+        temp.append(FFT[i-N_FFT])
+    return temp
+
+
+
+def get_freq_domain_full(N_FFT):
+    freq=fftfreq(N_FFT*2,0.05)
+    temp=[]
+    for i in range(2*N_FFT):
+        temp.append(freq[i-N_FFT])
+    return temp
+
+
+
+
+
+def get_freq_domain_BLC(N_FFT):
+    freq=fftfreq(N_FFT*2,0.06671)[0:N_FFT]
+    return freq
+   
