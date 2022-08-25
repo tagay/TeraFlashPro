@@ -47,9 +47,10 @@ def window_signal_sym(time_trace, hw, n):
 
 def window_signal_asym(time_trace, wl, wr, n):
     zero=find_zero(time_trace)
-    window=[]
     center=zero+abs(wl-wr)/2
     hw=(wr+wl)/2
+    window=[]
+    ### ahahah
     for i in range(len(time_trace)):
         if abs(i-center)<=hw:
             window.append(math.cos((i-zero)/hw)**n)
