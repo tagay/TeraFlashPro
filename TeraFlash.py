@@ -32,6 +32,7 @@ def get_freq_domain(N_FFT):
 
 def window_signal_sym(time_trace, hw, n, dT=0):
     zero=find_zero(time_trace)+dT
+    print(dT)
     #zero=len(time_trace)/2
     window=[]
     for i in range(len(time_trace)):
