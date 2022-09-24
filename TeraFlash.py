@@ -31,7 +31,7 @@ def get_freq_domain(N_FFT):
 
 
 def window_signal_sym(time_trace, hw, n, pos=0):
-    if pos=0:
+    if pos==0:
         zero=find_zero(time_trace)
     else:
         zero=pos
