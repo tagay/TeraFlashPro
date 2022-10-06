@@ -110,12 +110,14 @@ def find_zero(signal):
             if signal[i+1]<0 and signal[i]>0:
                 frac=signal[i]/(signal[i]-signal[i+1])
                 index=i
+                break
 
     if min_pos<max_pos:
         for i in range(min_pos,max_pos):
             if signal[i+1]>0 and signal[i]<0:
                 frac=signal[i]/(signal[i]-signal[i+1])
                 index=i
+                break
     pos=index+frac
     return pos
 
