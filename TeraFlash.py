@@ -30,11 +30,11 @@ def get_freq_domain(N_FFT):
 
 
 
-def window_signal_sym(time_trace, hw, n, pos=0):
-    if pos==0:
+def window_signal_sym(time_trace, hw, n, win_pos=0):
+    if win_pos==0:
         zero=find_zero(time_trace)
     else:
-        zero=pos
+        zero=win_pos
     window=[]
     for i in range(len(time_trace)):
         if abs(i-zero)<=hw:
@@ -66,13 +66,13 @@ def window_signal_asym(time_trace, wl, wr, n):
 
 
 
-def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, pos=0):
+def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, win_pos=0):
     sig_x=read_data(filename, 1, offset)
     sig_y=-read_data(filename, 3, offset)
 
     if sym==True:
         windowed_sig_x=window_signal_sym(sig_x, hw, n)
-        windowed_sig_y=window_signal_sym(sig_y, hw, n, pos)
+        windowed_sig_y=window_signal_sym(sig_y, hw, n, win_pos)
     elif sym==False:
         wl=hw[0]
         wr=hw[1]
