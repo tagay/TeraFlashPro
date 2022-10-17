@@ -101,6 +101,32 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, w
     return time_trace_x, time_trace_y, fft_x, fft_y
 
 
+def get_signal_and_fft_BLC(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, win_pos=0):
+    sig=read_data(filename, 1, offset)
+
+    if sym==True:
+        windowed_sig=window_signal_sym(sig, hw, n)
+    elif sym==False:
+        wl=hw[0]
+        wr=hw[1]
+        windowed_sig=window_signal_asym(sig, wl, wr, n)
+
+    padded_sig=np.pad(windowed_sig, pad_size, mode="constant")
+    fft=do_FFT(padded_sig, N_FFT)
+
+    time_trace=[] 
+    time_trace.append(sig)
+    time_trace.append(windowed_sig)
+    time_trace.append(padded_sig)
+    
+    return time_trace, fft
+
+
+
+
+
+
+
 def find_zero(signal):
     max_pos=np.argmax(signal)
     min_pos=np.argmin(signal)
