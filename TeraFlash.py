@@ -9,7 +9,6 @@ from matplotlib import cm
 from matplotlib import colorbar
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-
 def read_data(filename, n, offset=0):
     data=np.genfromtxt(filename, delimiter=",", skip_header=1, max_rows=10000)
     column_n=[]
@@ -28,8 +27,6 @@ def get_freq_domain(N_FFT):
     freq=fftfreq(N_FFT*2,0.05)[0:N_FFT]
     return freq
 
-
-
 def window_signal_sym(time_trace, hw, n, win_pos=0):
     if win_pos==0:
         zero=find_zero(time_trace)
@@ -38,7 +35,7 @@ def window_signal_sym(time_trace, hw, n, win_pos=0):
     window=[]
     for i in range(len(time_trace)):
         if abs(i-zero)<=hw:
-            window.append(math.cos((i-zero)/hw)**n)
+            window.append(math.cos(math.pi/2*(i-zero)/hw)**n)
         else:
             window.append(0)
     windowed_sig=np.multiply(time_trace, window)
@@ -48,15 +45,17 @@ def window_signal_sym(time_trace, hw, n, win_pos=0):
 
 
 
-def window_signal_asym(time_trace, wl, wr, n):
-    zero=find_zero(time_trace)
-    center=zero+abs(wl-wr)/2
+def window_signal_asym(time_trace, wl, wr, n, win_pos=0):
+    if win_pos==0:
+        zero=find_zero(time_trace)
+    else:
+        zero=win_pos
+    center=zero+(wr-wl)/2
     hw=(wr+wl)/2
     window=[]
-    ### ahahah
     for i in range(len(time_trace)):
         if abs(i-center)<=hw:
-            window.append(math.cos((i-zero)/hw)**n)
+            window.append(math.cos(math.pi/2*(i-center)/hw)**n)
         else:
             window.append(0)
     windowed_sig=np.multiply(time_trace, window)
