@@ -76,7 +76,7 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, w
         wl=hw[0]
         wr=hw[1]
         windowed_sig_x=window_signal_asym(sig_x, wl, wr, n)
-        windowed_sig_y=window_signal_asym(sig_y, wl, wr, n)
+        windowed_sig_y=window_signal_asym(sig_y, wl, wr, n, win_pos)
     
     padded_sig_x=np.pad(windowed_sig_x, pad_size, mode="constant")
     padded_sig_y=np.pad(windowed_sig_y, pad_size, mode="constant") 
