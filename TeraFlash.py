@@ -67,7 +67,7 @@ def window_signal_asym(time_trace, wl, wr, n, win_pos=0):
 
 
 
-def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, win_pos=0):
+def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=10, sym=True, win_pos=0):
     sig_x=read_data(filename, 1, offset)
     sig_y=-read_data(filename, 3, offset)
 
@@ -102,7 +102,7 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, w
     return time_trace_x, time_trace_y, fft_x, fft_y
 
 
-def get_signal_and_fft_BLC(filename, hw, pad_size, N_FFT, offset=0, n=2, sym=True, win_pos=0):
+def get_signal_and_fft_BLC(filename, hw, pad_size, N_FFT, offset=0, n=10, sym=True, win_pos=0):
     sig=read_data(filename, 1, offset)
 
     if sym==True:
