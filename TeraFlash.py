@@ -102,6 +102,46 @@ def get_signal_and_fft(filename, hw, pad_size, N_FFT, offset=0, n=10, sym=True, 
     return time_trace_x, time_trace_y, fft_x, fft_y
 
 
+def get_signal_and_fft_yaxis(filename, hw, pad_size, N_FFT, offset=0, n=10, sym=True, win_pos=0):
+    sig_x=read_data(filename, 1, offset)
+    sig_y=-read_data(filename, 3, offset)
+
+    if sym==True:
+        windowed_sig_x=window_signal_sym(sig_x, hw, n, win_pos)
+        windowed_sig_y=window_signal_sym(sig_y, hw, n)
+    elif sym==False:
+        wl=hw[0]
+        wr=hw[1]
+        windowed_sig_x=window_signal_asym(sig_x, wl, wr, n, win_pos)
+        windowed_sig_y=window_signal_asym(sig_y, wl, wr, n)
+    
+    padded_sig_x=np.pad(windowed_sig_x, pad_size, mode="constant")
+    padded_sig_y=np.pad(windowed_sig_y, pad_size, mode="constant") 
+
+
+        
+    fft_x=do_FFT(padded_sig_x, N_FFT)
+    fft_y=do_FFT(padded_sig_y, N_FFT)
+    
+    time_trace_x=[]
+    time_trace_y=[]
+    
+    time_trace_x.append(sig_x)
+    time_trace_x.append(windowed_sig_x)
+    time_trace_x.append(padded_sig_x)
+    
+    time_trace_y.append(sig_y)
+    time_trace_y.append(windowed_sig_y)
+    time_trace_y.append(padded_sig_y)    
+    
+    return time_trace_x, time_trace_y, fft_x, fft_y
+
+
+
+
+
+
+
 def get_signal_and_fft_BLC(filename, hw, pad_size, N_FFT, offset=0, n=10, sym=True, win_pos=0):
     sig=read_data(filename, 1, offset)
 
