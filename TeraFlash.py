@@ -285,12 +285,12 @@ def analyze(sam, ref, field, N, zero_xing, off, dL, N_win, N_pad, N_FFT, n, sym=
         peak=off+zero_xing[i][1]
 
 
-        a, b, c, d = get_signal_and_fft(ref+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad, N_FFT, sym, n, win_pos=peak)
+        a, b, c, d = get_signal_and_fft(ref+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad, N_FFT, n, sym=False, win_pos=peak)
         ref_fft_x=np.array(c)
         ref_fft_y=np.array(d)
 
 
-        a, b, c, d = get_signal_and_fft(sam+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad , N_FFT, sym, n, win_pos=peak)
+        a, b, c, d = get_signal_and_fft(sam+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad , N_FFT, n, sym=False, win_pos=peak)
         fft_x=np.array(c)
         fft_y=np.array(d)
 
