@@ -276,6 +276,7 @@ def calibration(name1, name2, name3, N_win, N_pad, N_FFT, p, sym=False):
 
 
 def analyze(sam, ref, field, N, zero_xing, off, dL, N_win, N_pad, N_FFT, n, sym=False):
+    freq=get_freq_domain(N_FFT)
     x=[]
     y=[]
     ref_x=[]
