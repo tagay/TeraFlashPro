@@ -250,7 +250,7 @@ def lin(w,b):
 def calculate_Txy(x, y, ref_x, ref_y):
     return (y*ref_x-x*ref_y)/(ref_x*ref_x+ref_y*ref_y)
 
-def calculate_Txx()
+#def calculate_Txx()
 
 def calibration(name1, name2, name3, N_win, N_pad, N_FFT, sym=False, n):
     #name1 - 45 deg scan
