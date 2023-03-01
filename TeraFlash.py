@@ -252,20 +252,20 @@ def calculate_Txy(x, y, ref_x, ref_y):
 
 #def calculate_Txx()
 
-def calibration(name1, name2, name3, N_win, N_pad, N_FFT, n, sym=False):
+def calibration(name1, name2, name3, N_win, N_pad, N_FFT, p, sym=False):
     #name1 - 45 deg scan
     #name2 - 315deg scan
     #name3 - 0 deg scan
     
-    a1,b1,c1,d1=get_signal_and_fft(name1, N_win, N_pad, N_FFT, sym=False, n)
+    a1,b1,c1,d1=get_signal_and_fft(name1, N_win, N_pad, N_FFT, n=p, sym=False)
     ratio_pos45=c1/d1
-    a2,b2,c2,d2=get_signal_and_fft(name2, N_win, N_pad, N_FFT, sym=False, n)
+    a2,b2,c2,d2=get_signal_and_fft(name2, N_win, N_pad, N_FFT, n=p, sym=False)
     ratio_neg45=c2/d2
     calib_ratio=-ratio_pos45*ratio_neg45
     amp=np.abs(np.sqrt(calib_ratio))
     phase=get_phase(calib_ratio)/2
     calib_ratio=amp*np.exp(1j*phase)
-    a0,b0,c0,d0=get_signal_and_fft(name3, N_win, N_pad,N_FFT, sym=False, n)
+    a0,b0,c0,d0=get_signal_and_fft(name3, N_win, N_pad,N_FFT, n=p, sym=False)
     zero_x=find_zero(a0[0])*0.05
     zero_y=find_zero(b0[0])*0.05
     off=find_zero(b2[0])-find_zero(b0[0])
