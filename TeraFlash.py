@@ -246,3 +246,120 @@ def linear(w, a, b):
 def lin(w,b):
     return w*b
 
+
+def calculate_Txy(x, y, ref_x, ref_y):
+    return (y*ref_x-x*ref_y)/(ref_x*ref_x+ref_y*ref_y)
+
+def calculate_Txx()
+
+def calibration(name1, name2, name3, N_win, N_pad, N_FFT, sym=False, n):
+    #name1 - 45 deg scan
+    #name2 - 315deg scan
+    #name3 - 0 deg scan
+    
+    a1,b1,c1,d1=get_signal_and_fft(name1, N_win, N_pad, N_FFT, sym, n)
+    ratio_pos45=c1/d1
+    a2,b2,c2,d2=get_signal_and_fft(name2, N_win, N_pad, N_FFT, sym, n)
+    ratio_neg45=c2/d2
+    calib_ratio=-ratio_pos45*ratio_neg45
+    amp=np.abs(np.sqrt(calib_ratio))
+    phase=get_phase(calib_ratio)/2
+    calib_ratio=amp*np.exp(1j*phase)
+    a0,b0,c0,d0=get_signal_and_fft(name3, N_win, N_pad,N_FFT, sym, n)
+    zero_x=find_zero(a0[0])*0.05
+    zero_y=find_zero(b0[0])*0.05
+    off=find_zero(b2[0])-find_zero(b0[0])
+    
+    
+    
+    return calib_ratio, [zero_x, zero_y], off
+
+
+def analyze(sam, ref, field, N, zero_xing, off, dL, N_win, N_pad, N_FFT, n, sym=False):
+    x=[]
+    y=[]
+    ref_x=[]
+    ref_y=[]
+
+    for i in range(N):
+        peak=off+zero_xing[i][1]
+
+
+        a, b, c, d = get_signal_and_fft(ref+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad, N_FFT, sym, n, win_pos=peak)
+        ref_fft_x=np.array(c)
+        ref_fft_y=np.array(d)
+
+
+        a, b, c, d = get_signal_and_fft(sam+"_"+field+"kG_"+str(i+1)+".csv", N_win, N_pad , N_FFT, sym, n, win_pos=peak)
+        fft_x=np.array(c)
+        fft_y=np.array(d)
+
+
+        pos_ref_x=zero_xing[i][0]*0.05
+        pos_ref_y=zero_xing[i][1]*0.05
+
+        pos_x=zero_xing[i][2]*0.05
+        pos_y=zero_xing[i][3]*0.05
+
+        dx=(np.mean(zero_xing, axis=0)[0]-np.mean(zero_xing, axis=0)[2])*0.05
+        dy=(np.mean(zero_xing, axis=0)[1]-np.mean(zero_xing, axis=0)[3])*0.05
+
+
+        ref_fft_x*=np.exp(1j*(2*math.pi*freq*(zero_x-pos_ref_x)))
+        fft_x*=np.exp(1j*(2*math.pi*freq*(zero_x-pos_x-dx)))
+
+        ref_fft_y*=np.exp(1j*(2*math.pi*freq*(zero_y-pos_ref_y)))
+        fft_y*=np.exp(1j*(2*math.pi*freq*(zero_y-pos_y-dy)))
+
+        ref_fft_y*=calib_ratio
+        fft_y*=calib_ratio
+
+
+        fft_x*=np.exp(1j*(2*math.pi*freq*(dL)))
+        fft_y*=np.exp(1j*(2*math.pi*freq*(dL)))
+        
+        x.append(fft_x)
+        y.append(fft_y)
+        ref_x.append(ref_fft_x)
+        ref_y.append(ref_fft_y)
+    
+    return x, y, ref_x, ref_y
+
+
+
+def find_zero_xings(sam ,ref, field, N):
+    zero_xing=[]
+    
+    
+    for i in range(N):
+        ref_x=read_data(ref+"_"+field+"kG_"+str(i+1)+".csv", 1)
+        ref_y=read_data(ref+"_"+field+"kG_"+str(i+1)+".csv", 3)
+        x=read_data(sam+"_"+field+"kG_"+str(i+1)+".csv", 1)
+        y=read_data(sam+"_"+field+"kG_"+str(i+1)+".csv", 3)
+
+        temp=[find_zero(ref_x),find_zero(ref_y),find_zero(x),find_zero(y)]
+        zero_xing.append(temp)
+        
+    return zero_xing
+        
+      
+
+    
+    
+    
+    
+  
+        
+      
+        
+
+
+
+
+
+    
+
+
+
+
+
