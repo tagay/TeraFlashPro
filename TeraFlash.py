@@ -51,15 +51,15 @@ def window_signal_asym(time_trace, wl, wr, n, win_pos=0):
     else:
         zero=win_pos
     center=zero+(wr-wl)/2
-    hw=(wr+wl)/2
+    hww=(wr+wl)/2
     window=[]
     for i in range(len(time_trace)):
         if abs(i-center)<=hw:
-            window.append(math.cos(math.pi/2*(i-center)/hw)**n)
+            window.append(math.cos(math.pi/2*(i-center)/hww)**n)
         else:
             window.append(0)
     a=np.linspace(0,len(time_trace)-1,len(time_trace))
-    window=(1+np.tanh((-np.absolute(a-center)+hw)/n))/2
+    window=(1+np.tanh((-np.absolute(a-center)+hww)/n))/2
     windowed_sig=np.multiply(time_trace, window)
     
     return windowed_sig
